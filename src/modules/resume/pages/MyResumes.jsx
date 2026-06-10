@@ -33,7 +33,7 @@ function MyResumes() {
   };
 
   const handleCreateNew = () => {
-    navigate('/resume-builder');
+    navigate('/resume-builder?new=true');
   };
 
   if (isLoading) {

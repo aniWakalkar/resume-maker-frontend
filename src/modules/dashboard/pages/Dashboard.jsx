@@ -81,7 +81,7 @@ function Dashboard() {
                   <Button 
                     onClick={() => navigate('/my-resumes')} 
                     variant="secondary"
-                    className="!rounded-xl sm:w-auto w-full justify-center bg-white text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm"
+                    className="!rounded-xl sm:w-auto w-full justify-center bg-white text-black hover:bg-slate-50 border border-slate-200 shadow-sm"
                   >
                     View My Resumes
                   </Button>
