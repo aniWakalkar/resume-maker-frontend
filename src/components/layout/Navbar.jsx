@@ -18,7 +18,6 @@ function Navbar() {
   // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside the profile dropdown and outside the profile button
       if (
         isProfileOpen &&
         profileDropdownRef.current &&
@@ -30,10 +29,7 @@ function Navbar() {
       }
     };
 
-    // Add event listener
     document.addEventListener('mousedown', handleClickOutside);
-    
-    // Cleanup
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -65,6 +61,7 @@ function Navbar() {
     dispatch(reset());
     navigate('/login');
     setIsProfileOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -73,15 +70,17 @@ function Navbar() {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo / Site Name */}
-          <Link to="/dashboard" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+          <Link to="/dashboard" className="flex items-center space-x-2 group">
+            <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-lg flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
               <span className="text-white font-bold text-lg">H</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Hobu</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
+              Hobu
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -90,29 +89,42 @@ function Navbar() {
               <Link
                 key={link.name}
                 to={link.path}
-                className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                className="text-slate-600 hover:text-indigo-600 font-medium transition-colors duration-200 relative group"
               >
                 {link.name}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-600 to-pink-600 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
           </div>
 
-          {/* User Profile / Desktop */}
+          {/* Desktop Right Section - Profile & Logout Button */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-white hover:bg-red-600 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-600"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
+
+            {/* Profile Dropdown */}
             <div className="relative">
               <button
                 ref={profileButtonRef}
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center space-x-2 focus:outline-none"
+                className="flex items-center space-x-2 focus:outline-none group"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md transition-transform group-hover:scale-105">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-slate-700 text-sm font-medium">
                   {user?.name?.split(' ')[0] || 'User'}
                 </span>
                 <svg
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -126,20 +138,20 @@ function Navbar() {
                 </svg>
               </button>
 
-              {/* Profile Dropdown - with click outside handler */}
+              {/* Profile Dropdown Menu */}
               {isProfileOpen && (
                 <div
                   ref={profileDropdownRef}
-                  className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-100 z-50 animate-fadeIn"
+                  className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 animate-fadeIn overflow-hidden"
                 >
-                  <div className="p-4 border-b border-gray-100">
+                  <div className="p-4 bg-gradient-to-r from-indigo-50 to-pink-50 border-b border-slate-100">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
                         {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{user?.name || 'User'}</p>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                        <p className="font-semibold text-slate-900">{user?.name || 'User'}</p>
+                        <p className="text-sm text-slate-500">{user?.email}</p>
                       </div>
                     </div>
                   </div>
@@ -150,7 +162,7 @@ function Navbar() {
                         setIsProfileOpen(false);
                         navigate('/dashboard');
                       }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-colors"
                     >
                       <div className="flex items-center space-x-3">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +176,7 @@ function Navbar() {
                         setIsProfileOpen(false);
                         navigate('/profile');
                       }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-colors"
                     >
                       <div className="flex items-center space-x-3">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,12 +185,9 @@ function Navbar() {
                         <span>Profile Settings</span>
                       </div>
                     </button>
-                  </div>
-
-                  <div className="p-2 border-t border-gray-100">
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-1"
                     >
                       <div className="flex items-center space-x-3">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,7 +206,7 @@ function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 hover:text-gray-900 focus:outline-none"
+              className="text-slate-600 hover:text-indigo-600 focus:outline-none"
             >
               <svg
                 className="w-6 h-6"
@@ -227,26 +236,26 @@ function Navbar() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div ref={mobileMenuRef} className="md:hidden py-4 border-t border-gray-100">
+          <div ref={mobileMenuRef} className="md:hidden py-4 border-t border-slate-100">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+                className="block px-3 py-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
               >
                 {link.name}
               </Link>
             ))}
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-slate-100">
               <div className="px-3 py-2">
                 <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <p className="font-medium text-slate-900">{user?.name || 'User'}</p>
+                    <p className="text-xs text-slate-500">{user?.email}</p>
                   </div>
                 </div>
                 <button
@@ -254,7 +263,7 @@ function Navbar() {
                     setIsMobileMenuOpen(false);
                     navigate('/dashboard');
                   }}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                  className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
                 >
                   Dashboard
                 </button>
@@ -263,13 +272,13 @@ function Navbar() {
                     setIsMobileMenuOpen(false);
                     navigate('/profile');
                   }}
-                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md"
+                  className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors"
                 >
                   Profile Settings
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md mt-2"
+                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg mt-2 transition-colors"
                 >
                   Sign Out
                 </button>
